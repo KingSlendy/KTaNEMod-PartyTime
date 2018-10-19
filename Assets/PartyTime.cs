@@ -23,6 +23,7 @@ public class PartyTime : MonoBehaviour {
 	int batCountD = 0;
 	int batCountAA = 0;
 	int indCount = 0;
+	bool landedBat = false;
 	bool reverseMove = false;
 
 	int[] nowSpcTex = new int[20];
@@ -44,7 +45,7 @@ public class PartyTime : MonoBehaviour {
 		moduleId = moduleIdCounter++;
 
 		batCountD = BombInfo.GetBatteryCount (KMBombInfoHelper.Battery.D);
-		batCountAA = BombInfo.GetBatteryCount (KMBombInfoHelper.Battery.AA);
+		batCountAA = BombInfo.GetBatteryCount (KMBombInfoHelper.Battery.AA) + BombInfo.GetBatteryCount (KMBombInfoHelper.Battery.AAx3) + BombInfo.GetBatteryCount (KMBombInfoHelper.Battery.AAx4);
 		indCount = BombInfo.GetIndicators ().Count ();
 
 		Debug.LogFormat (@"[Party Time #{0}] D Battery spaces advance {1} spaces.", moduleId, Mathf.Clamp (batCountD, 0, 6));
@@ -90,9 +91,9 @@ public class PartyTime : MonoBehaviour {
 				case 4:
 					currSpcInd++;
 
-					if (currSpcInd >= 4 || indCount == 0) {
+					if (currSpcInd >= 3 || indCount == 0) {
 						chooseTex = -1;
-						currSpcInd = 4;
+						currSpcInd = 3;
 					}
 					break;
 
@@ -208,6 +209,7 @@ public class PartyTime : MonoBehaviour {
 
 					case 2:
 						if (!reverseMove) {
+							landedBat = true;
 							prevNumber += Mathf.Clamp (batCountD, 1, 6);
 						} else {
 							stopMoving ();
@@ -216,6 +218,7 @@ public class PartyTime : MonoBehaviour {
 
 					case 3:
 						if (!reverseMove) {
+							landedBat = true;
 							prevNumber += Mathf.Clamp (batCountAA, 1, 6);
 						} else {
 							stopMoving ();
@@ -223,8 +226,12 @@ public class PartyTime : MonoBehaviour {
 						break;
 						
 					case 4:
-						reverseMove = true;
-						prevNumber += Mathf.Clamp (indCount, 1, 6);
+						if (!landedBat) {
+							reverseMove = true;
+							prevNumber += Mathf.Clamp (indCount, 1, 6);
+						} else {
+							stopMoving ();
+						}
 						break;
 					}
 
@@ -239,6 +246,7 @@ public class PartyTime : MonoBehaviour {
 							prevNumber--;
 						} else {
 							prevNumber = 0;
+							landedBat = false;
 							reverseMove = false;
 						}
 
@@ -282,6 +290,7 @@ public class PartyTime : MonoBehaviour {
 			}
 
 			ranDoNum = true;
+			landedBat = false;
 			reverseMove = false;
 		}
 	}

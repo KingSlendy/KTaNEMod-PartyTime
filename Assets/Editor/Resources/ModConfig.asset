@@ -13,10 +13,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: PartyTime
   title: Party Time
-  description: "Time for the party!\nInspired by Mario Party, hence the name\n\nmoduleID:
-    PartyTime\r\n\r\nManuals: Soon\n\nDice sprites:\nFieryExplosion [https://www.deviantart.com/fieryexplosion]\n\nThanks
-    to:\r\nkikones34 [https://steamcommunity.com/id/kikones34]\r\nFor helping me with
-    manual grammar stuff"
+  description: "Time for the party!\r\nInspired by Mario Party, hence the name\r\n\r\nmoduleID:
+    PartyTime\r\n\r\nManual HTML: https://ktane.timwi.de/HTML/Party%20Time.html\r\nManual
+    PDF: https://ktane.timwi.de/PDF/Party%20Time.pdf\r\n\r\nDice sprites:\r\nFieryExplosion
+    [https://www.deviantart.com/fieryexplosion]\r\n\r\nThanks to:\r\nkikones34 [https://steamcommunity.com/id/kikones34]\r\nFor
+    helping me with manual grammar stuff"
   version: 1.0
   outputFolder: build
   previewImage: {fileID: 2800000, guid: b6e26671260caf340a115030f30396ef, type: 3}

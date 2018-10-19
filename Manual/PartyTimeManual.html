@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class="no-js"><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Party Time — Keep Talking and Nobody Explodes Module</title>
-    <meta name="viewport" content="initial-scale=1"> 
+    <meta name="viewport" content="initial-scale=1">
 	<link href='https://fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -30,44 +30,52 @@
 					This party is the bomb!
 			</p>
 
-			<ul class = "outer">
-				<li>You're the little bomb in the star space. Your objective is reaching the goal of the board.</li>
-				<li>There'll be a yellow dice in the upper part of the module.</br>
-				When you press the dice, you'll roll a number between 1 and 6.</br>
-				You'll advance the number of spaces you rolled.</li>
-				<li>The black dice indicates the number of rolls you have left, if the number reaches 0 before you get to the end, you'll be sent to the start.</li>
+			<ul class="outer">
+				<li>You’re the little bomb in the star space. Your objective is reaching the goal of the board.</li>
+				<li>There'll be a yellow die in the upper part of the module.</br>
+				When you press the die, you’ll roll a number between 1 and 6.
+				You’ll advance the number of spaces you rolled.</li>
+				<li>The black die indicates the number of rolls you have left. If the number reaches 0 before you get to the end, you’ll be sent to the start.</li>
 				<li>There are some spaces in between which act in different ways:</li>
 			</ul>
-			
+
 			<table>
 				<tr>
 					<th>Space</th>
 					<th>Behaviour</th>
 				</tr>
-				
+
 				<tr>
-					<td align = "center"><img src = "img/space0.png"></td>
-					<td>If you land on this space, you'll advance the number of D batteries</br>(1 to 6) that are in the bomb.</td>
+					<th><img src="img/space0.png"></th>
+					<td>If you land on this space, you’ll advance the number of D batteries that are on the bomb, but only up to 6.<br>If you land on an indicator space after this, it’ll do nothing.</td>
 				</tr>
-				
+
 				<tr>
-					<td align = "center"><img src = "img/space1.png"></td>
-					<td>If you land on this space, you'll advance the number of AA batteries</br>(1 to 6) that are in the bomb.</td>
+					<th><img src="img/space1.png"></th>
+					<td>If you land on this space, you’ll advance the number of AA batteries that are on the bomb, but only up to 6.<br>If you land on an indicator space after this, it’ll do nothing.</td>
 				</tr>
-				
+
 				<tr>
-					<td align = "center"><img src = "img/space2.png"></td>
-					<td>If you land on this space, you'll go back the number of indicators</br>(1 to 6) that are in the bomb.</br>If you land on a battery space after this, it'll do nothing.</td>
+					<th><img src="img/space2.png"></th>
+					<td>If you land on this space, you’ll go back the number of indicators that are on the bomb, but only up to 6.<br>If you land on a battery space after this, it’ll do nothing.</td>
 				</tr>
-				
+
 				<tr>
-					<td align = "center"><img src = "img/space3.png"></td>
-					<td>Everytime you reach this space, you'll stop. In order to continue moving, you'll need to press either the space or the dice:<ul><li>Press the space if there aren't any battery spaces directly right/up/left/down.</br>Otherwise, press the dice.</li><li>If there are 4 fire spaces and less than 3 water spaces, you'll have to press the dice everytime.</li></ul></td>
+					<th><img src="img/space3.png"></th>
+					<td>Every time you reach this space, you’ll stop. In order to continue moving, press either the space or the die:
+                    <ul>
+                        <li>Press the space if there aren’t any battery spaces directly right/up/left/down. Otherwise, press the die.</li>
+                        <li>If there are 4 fire spaces and fewer than 3 water spaces, press the die every time.</li>
+                    </ul></td>
 				</tr>
-				
+
 				<tr>
-					<td align = "center"><img src = "img/space4.png"></td>
-					<td>It acts like the water space. In order to continue moving, you'll need to press either the space or the dice:<ul><li>Press the space if there is at least 1 water space directly right/up/left/down.</br>Otherwise, press the dice.</li><li>If there are 4 water spaces and less than 3 fire spaces, you'll have to press the space everytime.</li></ul></td>
+					<th><img src="img/space4.png"></th>
+					<td>This acts like the water space. In order to continue moving, press either the space or the die:
+                    <ul>
+                        <li>Press the space if there is at least 1 water space directly right/up/left/down. Otherwise, press the die.</li>
+                        <li>If there are 4 water spaces and fewer than 3 fire spaces, press the space every time.</li>
+                    </ul></td>
 				</tr>
 			</table>
         </div>
