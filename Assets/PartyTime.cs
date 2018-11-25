@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using KMBombInfoHelper;
 
@@ -15,28 +16,26 @@ public class PartyTime : MonoBehaviour {
 	public KMBombInfo BombInfo;
 	public KMAudio BombAudio;
 
-	public Texture2D[] diceNum = new Texture2D[7];
-	public Texture2D[] screenNum = new Texture2D[7];
-	public Texture2D[] spaceTexA = new Texture2D[0];
-	public Texture2D[] spaceTexB = new Texture2D[0];
+	public Texture2D[] diceNum = new Texture2D [7];
+	public Texture2D[] screenNum = new Texture2D [7];
+	public Texture2D[] spaceTexA = new Texture2D [0];
+	public Texture2D[] spaceTexB = new Texture2D [0];
 
-	int batCountD = 0;
-	int batCountAA = 0;
-	int indCount = 0;
-	bool landedBat = false;
-	bool reverseMove = false;
+	int batCountD, batCountAA, indCount;
+	bool landedBat, reverseMove;
 
-	int[] nowSpcTex = new int[20];
-	int[] isSpcT = new int[20];
+	int[] nowSpcTex = new int [20];
+	int[] isSpcT = new int [20];
 
 	int canRoll = 5;
 	bool ranDoNum = true;
-	int prevNumber = 0;
-	int nowSpace = 0;
-	int moveTimer = 0;
-	bool pressDice = false;
+	int prevNumber, nowSpace, moveTimer;
+	bool pressDice;
 
-	bool moduleSolved = false;
+	List<int> tpDie = new List<int> ();
+	List<int> tpSpaces = new List<int> ();
+
+	bool moduleSolved;
 
 	static int moduleIdCounter = 1;
 	int moduleId;
@@ -52,16 +51,16 @@ public class PartyTime : MonoBehaviour {
 		Debug.LogFormat (@"[Party Time #{0}] AA Battery spaces advance {1} spaces.", moduleId, Mathf.Clamp (batCountAA, 0, 6));
 		Debug.LogFormat (@"[Party Time #{0}] Indicator spaces regress {1} spaces.", moduleId, Mathf.Clamp (indCount, 0, 6));
 
-		Spaces [0].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [0]);
+		Spaces [0].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [0]);
 		nowSpcTex [0] = 0;
-		Spaces [19].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexA [7]);
+		Spaces [19].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexA [7]);
 		nowSpcTex [19] = 7;
 
-		int currSpcBatD = 0;
-		int currSpcBatAA = 0;
-		int currSpcInd = 0;
-		int currSpcWat = 0;
-		int currSpcFire = 0;
+		var currSpcBatD = 0;
+		var currSpcBatAA = 0;
+		var currSpcInd = 0;
+		var currSpcWat = 0;
+		var currSpcFire = 0;
 
 		for (int i = 1; i < Spaces.Length - 1; i++) {
 			int chooseTex = -1;
@@ -117,7 +116,7 @@ public class PartyTime : MonoBehaviour {
 				}
 			}
 
-			Spaces [i].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexA [chooseTex]);
+			Spaces [i].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexA [chooseTex]);
 
 			nowSpcTex [i] = chooseTex;
 		}
@@ -125,17 +124,17 @@ public class PartyTime : MonoBehaviour {
 		Debug.LogFormat (@"[Party Time #{0}] There are {1} Water spaces.", moduleId, currSpcWat - (currSpcWat == 5 ? 1 : 0));
 		Debug.LogFormat (@"[Party Time #{0}] There are {1} Fire spaces.", moduleId, currSpcFire - (currSpcFire == 5 ? 1 : 0));
 
-		object[] logLetters = new object[21];
+		object[] logLetters = new object [21];
 
 		logLetters [0] = moduleId;
 
 		for (int i = 0; i < Spaces.Length; i++) {
 			isSpcT [i] = -1;
-			int leftSpc = i - 1;
-			int rightSpc = i + 1;
-			int calcSpc = (((i % 5) * 2) + 1);
-			int upSpc = i - calcSpc;
-			int downSpc = i + 10 - calcSpc;
+			var leftSpc = i - 1;
+			var rightSpc = i + 1;
+			var calcSpc = (((i % 5) * 2) + 1);
+			var upSpc = i - calcSpc;
+			var downSpc = i + 10 - calcSpc;
 
 			if (nowSpcTex [i] == 5) {
 				if ((currSpcFire >= 3 && currSpcWat < 3) || (nowSpcTex [leftSpc] == 2 || nowSpcTex [leftSpc] == 3) || (nowSpcTex [rightSpc] == 2 || nowSpcTex [rightSpc] == 3) || (nowSpcTex [Mathf.Clamp (upSpc, 0, 19)] == 2 || nowSpcTex [Mathf.Clamp (upSpc, 0, 19)] == 3) || (nowSpcTex [Mathf.Clamp (downSpc, 0, 19)] == 2 || nowSpcTex [Mathf.Clamp (downSpc, 0, 19)] == 3)) {
@@ -156,16 +155,11 @@ public class PartyTime : MonoBehaviour {
 			if (nowSpcTex [i] == 5 || nowSpcTex [i] == 6) {
 				Debug.LogFormat (@"[Party Time #{0}] Space #{1} is {2}.", moduleId, i, isSpcT [i] == 1 ? "correct" : "incorrect");
 			}
-
-			/*string[] spcLetter = new string[7] { "S", "B", "A", "I", "W", "F", "G", "/X", "/N", "/Y" };
-			 
-			logLetters [i + 1] = spcLetters [nowSpcTex [i]] + spcLetters [isSpcT [i] + 8];*/
 		}
-
-		//Debug.LogFormat (@"[Party Time #{0}]\n ({1})-({2})-({3})-({4})-({5})\n({10})-({9})-({8})-({7})-({6})\n({11})-({12})-({13})-({14})-({15})\n({20})-({19})-({18})-({17})-({16})", logLetters);
 
 		Dice.OnInteract += delegate() {
 			onDicePress ();
+
 			return false;
 		};
 
@@ -174,6 +168,7 @@ public class PartyTime : MonoBehaviour {
 
 			Spaces [i].OnInteract += delegate () {
 				onSpacePress (j);
+
 				return false;
 			};
 		}
@@ -188,8 +183,7 @@ public class PartyTime : MonoBehaviour {
 			} while (rngNumber == prevNumber);
 
 			prevNumber = rngNumber;
-
-			Dice.transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", diceNum [rngNumber]);
+			Dice.transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", diceNum [rngNumber]);
 		} else {
 			if (moveTimer == 20) {
 				if (prevNumber == 0) {
@@ -235,12 +229,12 @@ public class PartyTime : MonoBehaviour {
 						break;
 					}
 
-					Dice.transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", diceNum [prevNumber]);
+					Dice.transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", diceNum [prevNumber]);
 				} else {
 					if (nowSpace < 19) {
-						Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexA [nowSpcTex [nowSpace]]);
-						nowSpace += reverseMove == false ? 1 : -1;							
-						Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [nowSpcTex [nowSpace]]);
+						Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexA [nowSpcTex [nowSpace]]);
+						nowSpace += (!reverseMove) ? 1 : -1;
+						Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [nowSpcTex [nowSpace]]);
 
 						if (nowSpace != 0) {
 							prevNumber--;
@@ -250,7 +244,7 @@ public class PartyTime : MonoBehaviour {
 							reverseMove = false;
 						}
 
-						Dice.transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", diceNum [prevNumber]);
+						Dice.transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", diceNum [prevNumber]);
 
 						if (nowSpcTex [nowSpace] != 5 && nowSpcTex [nowSpace] != 6) {
 							moveTimer = 0;
@@ -275,18 +269,28 @@ public class PartyTime : MonoBehaviour {
 				Debug.LogFormat (@"[Party Time #{0}] Module solved!", moduleId);
 				moduleSolved = true;
 			}
+		} else {
+			if (tpDie.Contains (nowSpace)) {
+				onDicePress ();
+				tpDie.Remove (nowSpace);
+			}
+
+			if (tpSpaces.Contains (nowSpace)) {
+				onSpacePress (nowSpace);
+				tpSpaces.Remove (nowSpace);
+			}
 		}
 	}
 
 	void stopMoving () {
 		if (nowSpace != 19) {
 			if (canRoll == 0) {
-				Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexA [nowSpcTex [nowSpace]]);
+				Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexA [nowSpcTex [nowSpace]]);
 				nowSpace = 0;
-				Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [nowSpcTex [nowSpace]]);
+				Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [nowSpcTex [nowSpace]]);
 
 				canRoll = 5;
-				Screen.transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", screenNum [canRoll]);
+				Screen.transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", screenNum [canRoll]);
 			}
 
 			ranDoNum = true;
@@ -297,7 +301,7 @@ public class PartyTime : MonoBehaviour {
 
 	void onDicePress () {
 		BombAudio.PlayGameSoundAtTransform (KMSoundOverride.SoundEffect.ButtonPress, transform);
-		GetComponent <KMSelectable> ().AddInteractionPunch ();
+		GetComponent<KMSelectable> ().AddInteractionPunch ();
 
 		if (moduleSolved) {
 			return;
@@ -309,7 +313,7 @@ public class PartyTime : MonoBehaviour {
 			if (canRoll > 0) {
 				canRoll--;
 
-				Screen.transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", screenNum [canRoll]);
+				Screen.transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", screenNum [canRoll]);
 			}
 
 			ranDoNum = false;
@@ -317,30 +321,30 @@ public class PartyTime : MonoBehaviour {
 			if (moveTimer == 21 && pressDice) {
 				if (isSpcT [nowSpace] == 0) {
 					if (nowSpcTex [nowSpace] == 5) {
-						Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [8]);
+						Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [8]);
 						nowSpcTex [nowSpace] = 8;
 					} else {
 						if (nowSpcTex [nowSpace] == 6) {
-							Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [10]);
+							Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [10]);
 							nowSpcTex [nowSpace] = 10;
 						}
 					}
 
-					BombAudio.PlaySoundAtTransform ("SoundCorrect", this.transform);
-					Debug.LogFormat (@"[Party Time #{0}] You pressed the dice when space #{1} was incorrect, which is correct.", moduleId, nowSpace);
+					BombAudio.PlaySoundAtTransform ("SoundCorrect", transform);
+					Debug.LogFormat (@"[Party Time #{0}] You pressed the die when space #{1} was incorrect, which is correct.", moduleId, nowSpace);
 				} else {
 					if (nowSpcTex [nowSpace] == 5) {
-						Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [9]);
+						Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [9]);
 						nowSpcTex [nowSpace] = 9;
 					} else {
 						if (nowSpcTex [nowSpace] == 6) {
-							Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [11]);
+							Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [11]);
 							nowSpcTex [nowSpace] = 11;
 						}
 					}
 
 					BombModule.HandleStrike ();
-					Debug.LogFormat (@"[Party Time #{0}] You pressed the dice when space #{1} was correct, which is incorrect.", moduleId, nowSpace);
+					Debug.LogFormat (@"[Party Time #{0}] You pressed the die when space #{1} was correct, which is incorrect.", moduleId, nowSpace);
 				}
 
 				moveTimer = 0;
@@ -353,28 +357,28 @@ public class PartyTime : MonoBehaviour {
 		if (nowSpace == spacePressed && (nowSpcTex [nowSpace] == 5 || nowSpcTex [nowSpace] == 6)) {
 			if (isSpcT [nowSpace] != -1) {
 				BombAudio.PlayGameSoundAtTransform (KMSoundOverride.SoundEffect.ButtonPress, transform);
-				GetComponent <KMSelectable> ().AddInteractionPunch ();
+				GetComponent<KMSelectable> ().AddInteractionPunch ();
 
 				if (isSpcT [nowSpace] == 1) {
 					if (nowSpcTex [nowSpace] == 5) {
-						Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [8]);
+						Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [8]);
 						nowSpcTex [nowSpace] = 8;
 					} else {
 						if (nowSpcTex [nowSpace] == 6) {
-							Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [10]);
+							Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [10]);
 							nowSpcTex [nowSpace] = 10;
 						}
 					}
 
-					BombAudio.PlaySoundAtTransform ("SoundCorrect", this.transform);
+					BombAudio.PlaySoundAtTransform ("SoundCorrect", transform);
 					Debug.LogFormat (@"[Party Time #{0}] You pressed space #{1} when it was correct, which is correct.", moduleId, spacePressed);
 				} else {
 					if (nowSpcTex [nowSpace] == 5) {
-						Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [9]);
+						Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [9]);
 						nowSpcTex [nowSpace] = 9;
 					} else {
 						if (nowSpcTex [nowSpace] == 6) {
-							Spaces [nowSpace].transform.GetChild (0).gameObject.GetComponent <Renderer> ().material.SetTexture ("_MainTex", spaceTexB [11]);
+							Spaces [nowSpace].transform.GetChild (0).GetComponent<Renderer> ().material.SetTexture ("_MainTex", spaceTexB [11]);
 							nowSpcTex [nowSpace] = 11;
 						}
 					}
@@ -386,5 +390,49 @@ public class PartyTime : MonoBehaviour {
 				moveTimer = 0;
 			}
 		}
+	}
+
+	#pragma warning disable 414
+		private readonly string TwitchHelpMessage = @"!{0} roll (rolls the die) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Start space is 0]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Start space is 0])";
+	#pragma warning restore 414
+
+	KMSelectable[] ProcessTwitchCommand (string command) {
+		command = command.ToLowerInvariant ().Trim ();
+
+		if (command.Equals ("roll")) {
+			return new [] { Dice };
+		}
+
+		if (Regex.IsMatch (command, @"^die +[0-9^, |&]{1,}$")) {
+			tpDie.Clear ();
+			command = command.Substring (4).Trim ();
+
+			var spaces = command.Split (new [] { ',', ' ', '|', '&' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+			for (int i = 0; i < spaces.Length; i++) {
+				if (Regex.IsMatch (spaces [i], @"^[0-9]{1,2}$")) {
+					tpDie.Add (int.Parse (spaces [i].ToString ()));
+				}
+			}
+
+			return new [] { Spaces [0] };
+		}
+
+		if (Regex.IsMatch (command, @"^space +[0-9^, |&]{1,}$")) {
+			tpSpaces.Clear ();
+			command = command.Substring (6).Trim ();
+
+			var spaces = command.Split (new [] { ',', ' ', '|', '&' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+			for (int i = 0; i < spaces.Length; i++) {
+				if (Regex.IsMatch (spaces [i], @"^[0-9]{1,2}$")) {
+					tpSpaces.Add (int.Parse (spaces [i].ToString ()));
+				}
+			}
+
+			return new [] { Spaces [0] };
+		}
+
+		return null;
 	}
 }
