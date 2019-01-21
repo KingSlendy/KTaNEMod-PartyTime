@@ -126,9 +126,9 @@ public class PartyTime : MonoBehaviour {
 		Debug.LogFormat(@"[Party Time #{0}] There are {1} Water spaces.", moduleId, currSpcWat - (currSpcWat == 5 ? 1 : 0));
 		Debug.LogFormat(@"[Party Time #{0}] There are {1} Fire spaces.", moduleId, currSpcFire - (currSpcFire == 5 ? 1 : 0));
 
-		object[] logLetters = new object [21];
-
+		object[] logLetters = new object[21];
 		logLetters[0] = moduleId;
+		var spaceLetters = new[] { "S", " ", "D", "A", "I", "W", "F", "G" };
 
 		for (int i = 0; i < Spaces.Length; i++) {
 			isSpcT[i] = -1;
@@ -139,14 +139,14 @@ public class PartyTime : MonoBehaviour {
 			var downSpc = i + 10 - calcSpc;
 
 			if (nowSpcTex[i] == 5) {
-				if ((currSpcFire >= 3 && currSpcWat < 3) || (nowSpcTex[leftSpc] == 2 || nowSpcTex[leftSpc] == 3) || (nowSpcTex[rightSpc] == 2 || nowSpcTex[rightSpc] == 3) || (nowSpcTex[Mathf.Clamp(upSpc, 0, 19)] == 2 || nowSpcTex[Mathf.Clamp(upSpc, 0, 19)] == 3) || (nowSpcTex[Mathf.Clamp(downSpc, 0, 19)] == 2 || nowSpcTex[Mathf.Clamp(downSpc, 0, 19)] == 3)) {
+				if ((currSpcFire > 3 && currSpcWat < 3) || (nowSpcTex[leftSpc] == 2 || nowSpcTex[leftSpc] == 3) || (nowSpcTex[rightSpc] == 2 || nowSpcTex[rightSpc] == 3) || (nowSpcTex[Mathf.Clamp(upSpc, 0, 19)] == 2 || nowSpcTex[Mathf.Clamp(upSpc, 0, 19)] == 3) || (nowSpcTex[Mathf.Clamp(downSpc, 0, 19)] == 2 || nowSpcTex[Mathf.Clamp(downSpc, 0, 19)] == 3)) {
 					isSpcT[i] = 0;
 				} else {
 					isSpcT[i] = 1;
 				}
 			} else {
 				if (nowSpcTex[i] == 6) {
-					if ((currSpcWat >= 3 && currSpcFire < 3) || nowSpcTex[leftSpc] == 5 || nowSpcTex[rightSpc] == 5 || nowSpcTex[Mathf.Clamp(upSpc, 0, 19)] == 5 || nowSpcTex[Mathf.Clamp(downSpc, 0, 19)] == 5) {
+					if ((currSpcWat > 3 && currSpcFire < 3) || nowSpcTex[leftSpc] == 5 || nowSpcTex[rightSpc] == 5 || nowSpcTex[Mathf.Clamp(upSpc, 0, 19)] == 5 || nowSpcTex[Mathf.Clamp(downSpc, 0, 19)] == 5) {
 						isSpcT[i] = 1;
 					} else {
 						isSpcT[i] = 0;
@@ -154,10 +154,22 @@ public class PartyTime : MonoBehaviour {
 				}
 			}
 
+			logLetters[i + 1] = spaceLetters[nowSpcTex[i]];
+
 			if (nowSpcTex[i] == 5 || nowSpcTex[i] == 6) {
 				Debug.LogFormat(@"[Party Time #{0}] Space #{1} is {2}.", moduleId, i, isSpcT[i] == 1 ? "correct" : "incorrect");
 			}
 		}
+
+		Debug.LogFormat(@"[Party Time #{0}] Current board:", moduleId);
+		var nowLog = logLetters.Skip(1).Take(5).ToArray();
+		Debug.LogFormat(@"[Party Time #{0}] ({1})-({2})-({3})-({4})-({5})", moduleId, nowLog[0], nowLog[1], nowLog[2], nowLog[3], nowLog[4]);
+		nowLog = logLetters.Skip(6).Take(5).ToArray();
+		Debug.LogFormat(@"[Party Time #{0}] ({5})-({4})-({3})-({2})-({1})", moduleId, nowLog[0], nowLog[1], nowLog[2], nowLog[3], nowLog[4]);
+		nowLog = logLetters.Skip(11).Take(5).ToArray();
+		Debug.LogFormat(@"[Party Time #{0}] ({1})-({2})-({3})-({4})-({5})", moduleId, nowLog[0], nowLog[1], nowLog[2], nowLog[3], nowLog[4]);
+		nowLog = logLetters.Skip(16).Take(5).ToArray();
+		Debug.LogFormat(@"[Party Time #{0}] ({5})-({4})-({3})-({2})-({1})", moduleId, nowLog[0], nowLog[1], nowLog[2], nowLog[3], nowLog[4]);
 
 		Dice.OnInteract += delegate() {
 			onDicePress();
