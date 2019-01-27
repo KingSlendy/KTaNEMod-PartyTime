@@ -6634,8 +6634,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d5692748058ea54f84f4e014c5d8ede, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Screen: {fileID: 1076576972513116}
-  Dice: {fileID: 114541473469605570}
+  BombAudio: {fileID: 114910657315890310}
+  BombInfo: {fileID: 114545081339998994}
+  BombModule: {fileID: 114613585546488966}
   Spaces:
   - {fileID: 114438578823673988}
   - {fileID: 114951338703723166}
@@ -6657,9 +6658,8 @@ MonoBehaviour:
   - {fileID: 114353673370433146}
   - {fileID: 114558824240475326}
   - {fileID: 114899346714160498}
-  BombModule: {fileID: 114613585546488966}
-  BombInfo: {fileID: 114545081339998994}
-  BombAudio: {fileID: 114910657315890310}
+  Dice: {fileID: 114541473469605570}
+  Screen: {fileID: 1076576972513116}
   diceNum:
   - {fileID: 2800000, guid: a4f049ab61a60c145b3159c29a7394f3, type: 3}
   - {fileID: 2800000, guid: 3c9c63245ca9a574898510ed42497db4, type: 3}

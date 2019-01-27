@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -9,23 +7,22 @@ using KMBombInfoHelper;
 using Random = UnityEngine.Random;
 
 public class PartyTime : MonoBehaviour {
-	public GameObject Screen;
-	public KMSelectable Dice;
-	public KMSelectable[] Spaces;
-	public KMBombModule BombModule;
-	public KMBombInfo BombInfo;
 	public KMAudio BombAudio;
-
-	public Texture2D[] diceNum = new Texture2D [7];
-	public Texture2D[] screenNum = new Texture2D [7];
-	public Texture2D[] spaceTexA = new Texture2D [0];
-	public Texture2D[] spaceTexB = new Texture2D [0];
+	public KMBombInfo BombInfo;
+	public KMBombModule BombModule;
+	public KMSelectable[] Spaces;
+	public KMSelectable Dice;
+	public GameObject Screen;
+	public Texture2D[] diceNum = new Texture2D[7];
+	public Texture2D[] screenNum = new Texture2D[7];
+	public Texture2D[] spaceTexA = new Texture2D[0];
+	public Texture2D[] spaceTexB = new Texture2D[0];
 
 	int batCountD, batCountAA, indCount;
 	bool landedBat, reverseMove;
 
-	int[] nowSpcTex = new int [20];
-	int[] isSpcT = new int [20];
+	readonly int[] nowSpcTex = new int[20];
+	readonly int[] isSpcT = new int[20];
 
 	int canRoll = 5;
 	bool ranDoNum = true;
@@ -34,7 +31,7 @@ public class PartyTime : MonoBehaviour {
 
 	List<int> tpDie = new List<int>();
 	List<int> tpSpaces = new List<int>();
-	Color[] tpColors = { new Color32(227, 201, 23, 255), new Color32(255, 0, 255, 255), Color.red };
+	readonly Color[] tpColors = { new Color32(227, 201, 23, 255), new Color32(255, 0, 255, 255), Color.red };
 	bool tpRoll;
 
 	bool moduleSolved;
@@ -172,7 +169,7 @@ public class PartyTime : MonoBehaviour {
 		Debug.LogFormat(@"[Party Time #{0}] ({5})-({4})-({3})-({2})-({1})", moduleId, nowLog[0], nowLog[1], nowLog[2], nowLog[3], nowLog[4]);
 
 		Dice.OnInteract += delegate() {
-			onDicePress();
+			OnDicePress();
 
 			return false;
 		};
@@ -181,7 +178,7 @@ public class PartyTime : MonoBehaviour {
 			int j = i;
 
 			Spaces[i].OnInteract += delegate () {
-				onSpacePress(j);
+				OnSpacePress(j);
 
 				return false;
 			};
@@ -212,7 +209,7 @@ public class PartyTime : MonoBehaviour {
 						case 9:
 						case 10:
 						case 11:
-							stopMoving();
+							StopMoving();
 							break;
 
 						case 2:
@@ -220,7 +217,7 @@ public class PartyTime : MonoBehaviour {
 								landedBat = true;
 								prevNumber += Mathf.Clamp(batCountD, 1, 6);
 							} else {
-								stopMoving();
+								StopMoving();
 							}
 							break;
 
@@ -229,7 +226,7 @@ public class PartyTime : MonoBehaviour {
 								landedBat = true;
 								prevNumber += Mathf.Clamp(batCountAA, 1, 6);
 							} else {
-								stopMoving();
+								StopMoving();
 							}
 							break;
 						
@@ -238,7 +235,7 @@ public class PartyTime : MonoBehaviour {
 								reverseMove = true;
 								prevNumber += Mathf.Clamp(indCount, 1, 6);
 							} else {
-								stopMoving();
+								StopMoving();
 							}
 							break;
 					}
@@ -284,19 +281,21 @@ public class PartyTime : MonoBehaviour {
 				moduleSolved = true;
 			}
 		} else {
-			if (tpDie.Contains(nowSpace)) {
-				onDicePress();
-				tpDie.Remove(nowSpace);
-			}
+            if (tpRoll) {
+                if (tpDie.Contains(nowSpace)) {
+                    OnDicePress();
+                    tpDie.Remove(nowSpace);
+                }
 
-			if (tpSpaces.Contains(nowSpace)) {
-				onSpacePress(nowSpace);
-				tpSpaces.Remove(nowSpace);
-			}
+                if (tpSpaces.Contains(nowSpace)) {
+                    OnSpacePress(nowSpace);
+                    tpSpaces.Remove(nowSpace);
+                }
+            }
 		}
 	}
 
-	void stopMoving() {
+	void StopMoving() {
 		if (nowSpace != 19) {
 			if (canRoll == 0) {
 				Spaces[nowSpace].transform.GetChild(0).GetComponent<Renderer>().material.SetTexture("_MainTex", spaceTexA[nowSpcTex[nowSpace]]);
@@ -314,12 +313,12 @@ public class PartyTime : MonoBehaviour {
 			if (tpRoll) {
 				prevNumber = Random.Range(1, 7);
 				Dice.transform.GetChild(0).GetComponent<Renderer>().material.SetTexture("_MainTex", diceNum[prevNumber]);
-				onDicePress();
+				OnDicePress();
 			}
 		}
 	}
 
-	void onDicePress() {
+	void OnDicePress() {
 		BombAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
 		GetComponent<KMSelectable>().AddInteractionPunch();
 
@@ -364,6 +363,7 @@ public class PartyTime : MonoBehaviour {
 						}
 					}
 
+                    tpRoll = false;
 					BombModule.HandleStrike();
 					Debug.LogFormat(@"[Party Time #{0}] You pressed the die when space #{1} was correct, which is incorrect.", moduleId, nowSpace);
 				}
@@ -374,7 +374,7 @@ public class PartyTime : MonoBehaviour {
 		}
 	}
 
-	void onSpacePress(int spacePressed) {
+	void OnSpacePress(int spacePressed) {
 		if (nowSpace == spacePressed && (nowSpcTex[nowSpace] == 5 || nowSpcTex[nowSpace] == 6)) {
 			if (isSpcT[nowSpace] != -1) {
 				BombAudio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
@@ -404,6 +404,7 @@ public class PartyTime : MonoBehaviour {
 						}
 					}
 
+                    tpRoll = false;
 					BombModule.HandleStrike();
 					Debug.LogFormat(@"[Party Time #{0}] You pressed space #{1} when it was incorrect, which is incorrect.", moduleId, spacePressed);
 				}
@@ -414,7 +415,7 @@ public class PartyTime : MonoBehaviour {
 	}
 
 	#pragma warning disable 414
-	private readonly string TwitchHelpMessage = @"!{0} roll start/stop (starts/stops rolling) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Star space is 0]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Star space is 0])";
+	private readonly string TwitchHelpMessage = @"!{0} roll start/stop (starts/stops rolling) (it disables after a strike) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Star space is 0] [die 0 to clear list]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Star space is 0] [space 0 to clear list]) | if auto-roll is disabled, space/die lists will not activate when landing in a space; make sure to enable it again after a strike.";
 	#pragma warning restore 414
 
 	KMSelectable[] ProcessTwitchCommand(string command) {
@@ -424,14 +425,14 @@ public class PartyTime : MonoBehaviour {
 			command = command.Substring(5).Trim();
 			tpRoll = (command.Equals("start"));
 
-			return (tpRoll) ? new[] { Dice } : new[] { Spaces[0] };
+			return (moveTimer != 21 && tpRoll) ? new[] { Dice } : new[] { Spaces[0] };
 		}
 
-		if (Regex.IsMatch(command, @"^die +[0-9^, |&]{1,}$")) {
+		if (Regex.IsMatch(command, @"^die +[0-9^, |&]+$")) {
 			tpDie.Clear();
 			command = command.Substring(4).Trim();
 
-			var spaces = command.Split(new [] { ',', ' ', '|', '&' }, System.StringSplitOptions.RemoveEmptyEntries);
+			var spaces = command.Split(new[] { ',', ' ', '|', '&' }, System.StringSplitOptions.RemoveEmptyEntries);
 
 			for (int i = 0; i < spaces.Length; i++) {
 				if (Regex.IsMatch(spaces[i], @"^[0-9]{1,2}$")) {
