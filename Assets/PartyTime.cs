@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using KMBombInfoHelper;
@@ -33,6 +34,7 @@ public class PartyTime : MonoBehaviour {
 	List<int> tpSpaces = new List<int>();
 	readonly Color[] tpColors = { new Color32(227, 201, 23, 255), new Color32(255, 0, 255, 255), Color.red };
 	bool tpRoll;
+    bool tpCleared;
 
 	bool moduleSolved;
 
@@ -415,11 +417,12 @@ public class PartyTime : MonoBehaviour {
 	}
 
 	#pragma warning disable 414
-	private readonly string TwitchHelpMessage = @"!{0} roll start/stop (starts/stops rolling) (it disables after a strike) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Star space is 0] [die 0 to clear list]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Star space is 0] [space 0 to clear list]) | if auto-roll is disabled, space/die lists will not activate when landing in a space; make sure to enable it again after a strike.";
+	private readonly string TwitchHelpMessage = @"!{0} roll start/stop (starts/stops rolling) (it disables after a strike) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Star space is 0] [{die clear} to clear list]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Star space is 0] [{space clear} to clear list]) | if auto-roll is disabled, space/die lists will not activate when landing in a space; make sure to enable it again after a strike.";
 	#pragma warning restore 414
 
 	KMSelectable[] ProcessTwitchCommand(string command) {
 		command = command.ToLowerInvariant().Trim();
+        tpCleared = false;
 
 		if (Regex.IsMatch(command, @"^roll (start|stop)$")) {
 			command = command.Substring(5).Trim();
@@ -428,17 +431,24 @@ public class PartyTime : MonoBehaviour {
 			return (moveTimer != 21 && tpRoll) ? new[] { Dice } : new[] { Spaces[0] };
 		}
 
-		if (Regex.IsMatch(command, @"^die +[0-9^, |&]+$")) {
-			tpDie.Clear();
+		if (Regex.IsMatch(command, @"^(die +[0-9^, |&]+)|(die clear)$")) {
 			command = command.Substring(4).Trim();
-
-			var spaces = command.Split(new[] { ',', ' ', '|', '&' }, System.StringSplitOptions.RemoveEmptyEntries);
+			var spaces = command.Split(new[] { ',', ' ', '|', '&' }, StringSplitOptions.RemoveEmptyEntries);
 
 			for (int i = 0; i < spaces.Length; i++) {
+                if (spaces[i].Equals("clear")) {
+                    tpDie.Clear();
+                    tpCleared = true;
+                }
+
 				if (Regex.IsMatch(spaces[i], @"^[0-9]{1,2}$")) {
 					var spaceInt = int.Parse(spaces[i].ToString());
 
-					if (spaceInt > 0 && spaceInt < 19 && !tpSpaces.Contains(spaceInt)) {
+					if (spaceInt > 0 && spaceInt < 19) {
+                        if (tpSpaces.Contains(spaceInt)) {
+                            tpSpaces.Remove(spaceInt);
+                        }
+
 						tpDie.Add(spaceInt);
 					}
 				}
@@ -450,20 +460,27 @@ public class PartyTime : MonoBehaviour {
 				}
 			}
 
-			return (tpDie.Count > 0) ? new[] { Spaces[0] } : null;
+			return (tpDie.Count > 0 || tpCleared) ? new[] { Spaces[0] } : null;
 		}
 
-		if (Regex.IsMatch(command, @"^space +[0-9^, |&]+$")) {
-			tpSpaces.Clear();
+		if (Regex.IsMatch(command, @"^(space +[0-9^, |&]+)|(space clear)$")) {
 			command = command.Substring(6).Trim();
-
-			var spaces = command.Split(new[] { ',', ' ', '|', '&' }, System.StringSplitOptions.RemoveEmptyEntries);
+			var spaces = command.Split(new[] { ',', ' ', '|', '&' }, StringSplitOptions.RemoveEmptyEntries);
 
 			for (int i = 0; i < spaces.Length; i++) {
-				if (Regex.IsMatch(spaces[i], @"^[0-9]{1,2}$")) {
+                if (spaces[i].Equals("clear")) {
+                    tpSpaces.Clear();
+                    tpCleared = true;
+                }
+
+                if (Regex.IsMatch(spaces[i], @"^[0-9]{1,2}$")) {
 					var spaceInt = int.Parse(spaces[i].ToString());
 
-					if (spaceInt > 0 && spaceInt < 19 && !tpDie.Contains(spaceInt)) {
+					if (spaceInt > 0 && spaceInt < 19) {
+                        if (tpDie.Contains(spaceInt)) {
+                            tpDie.Remove(spaceInt);
+                        }
+
 						tpSpaces.Add(spaceInt);
 					}
 				}
@@ -475,7 +492,7 @@ public class PartyTime : MonoBehaviour {
 				}
 			}
 
-			return (tpSpaces.Count > 0) ? new[] { Spaces[0] } : null;
+			return (tpSpaces.Count > 0 || tpCleared) ? new[] { Spaces[0] } : null;
 		}
 
 		return null;
