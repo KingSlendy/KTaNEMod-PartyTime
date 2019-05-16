@@ -417,7 +417,7 @@ public class PartyTime : MonoBehaviour {
 	}
 
 	#pragma warning disable 414
-	private readonly string TwitchHelpMessage = @"!{0} roll start/stop (starts/stops rolling) (it disables after a strike) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Star space is 0] [{die clear} to clear list]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Star space is 0] [{space clear} to clear list]) | if auto-roll is disabled, space/die lists will not activate when landing in a space; make sure to enable it again after a strike.";
+	private readonly string TwitchHelpMessage = @"!{0} roll start/stop (starts/stops rolling) (it disables after a strike) | !{0} die 1 2 3... (presses the die when you land on the specified spaces [Star space is 0] [(die clear) to clear list]) | !{0} space 1 2 3... (presses the specified spaces when you land on them [Star space is 0] [(space clear) to clear list]) | if auto-roll is disabled, space/die lists will not activate when landing in a space; make sure to enable it again after a strike.";
 	#pragma warning restore 414
 
 	KMSelectable[] ProcessTwitchCommand(string command) {
